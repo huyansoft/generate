@@ -1,0 +1,4 @@
+#foreach($prop in $props)
+	<label for="$prop">$prop</label>
+	$render.render("${domainClass}", "${prop}")
+#end

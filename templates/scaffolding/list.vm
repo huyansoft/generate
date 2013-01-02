@@ -1,0 +1,46 @@
+<div class="container-fluid">
+<div class="row-fluid">
+
+<div class="search-well">##查询框
+
+	<form class="form-inline">
+		<input class="input-medium" placeholder="Search Help..." id="appendedInputButton" type="text">
+		<button class="btn" type="button"><i class="icon-search"></i>查询</button>
+	</form>
+</div>
+	
+<div class="btn-toolbar">##功能按钮
+    
+	<button class="btn btn-primary"><i class="icon-plus"></i>添加</button>
+    <button class="btn">导入</button>
+    <button class="btn">导出</button>
+</div>
+
+##列表
+<div class="well"> 
+	<table class="table">
+      <thead>
+        <tr>
+#foreach($prop in $props)
+		    <th>$prop</th>
+#end
+		</tr>
+      </thead>
+      <tbody>
+		${foreach}($${propertyName} in $${propertyName}List)
+		<tr>
+#foreach($prop in $props)
+		    <th>$!${propertyName}.$prop</th>
+#end
+		</tr>
+		${end}
+      </tbody>
+    </table>
+</div>
+<div class="pagination">##分页
+
+	#pager($url,$count,$ddutool.page_size())
+</div>
+
+</div>
+</div>

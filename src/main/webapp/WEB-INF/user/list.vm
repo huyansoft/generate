@@ -1,0 +1,42 @@
+<div class="container-fluid">
+<div class="row-fluid">
+
+<div class="search-well">
+	<form class="form-inline">
+		<input class="input-medium" placeholder="Search Help..." id="appendedInputButton" type="text">
+		<button class="btn" type="button"><i class="icon-search"></i>查询</button>
+	</form>
+</div>
+	
+<div class="btn-toolbar">    
+	<button class="btn btn-primary"><i class="icon-plus"></i>添加</button>
+    <button class="btn">导入</button>
+    <button class="btn">导出</button>
+</div>
+
+<div class="well"> 
+	<table class="table">
+      <thead>
+        <tr>
+		    <th>username</th>
+		    <th>email</th>
+		    <th>realname</th>
+		</tr>
+      </thead>
+      <tbody>
+		#foreach($user in $userList)
+		<tr>
+		    <th>$!user.username</th>
+		    <th>$!user.email</th>
+		    <th>$!user.realname</th>
+		</tr>
+		#end
+      </tbody>
+    </table>
+</div>
+<div class="pagination">
+	#pager($url,$count,$ddutool.page_size())
+</div>
+
+</div>
+</div>

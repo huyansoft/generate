@@ -1,0 +1,6 @@
+	<label for="username">username</label>
+	<input type="text" value="" id="username" name="username">
+	<label for="email">email</label>
+	<input type="text" value="" id="email" name="email">
+	<label for="realname">realname</label>
+	<input type="text" value="" id="realname" name="realname">
