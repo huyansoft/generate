@@ -1,4 +1,10 @@
+<fieldset >
 #foreach($prop in $props)
-	<label for="$prop">$prop</label>
-	$render.render("${domainClass}", "${prop}")
+	<div class="control-group ${operator_2}ddutool.hasErrors('$prop', 'error')" >
+        <label class="control-label" for="${propertyName}.$prop">${operator_2}text.get("${propertyName}.${prop}.label")：</label>
+        <div class="controls">
+        	$render.render("${domainClass}", "${prop}")
+        </div>
+	</div>
 #end
+</fieldset >

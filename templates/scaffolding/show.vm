@@ -1,0 +1,41 @@
+<div class="container-fluid">
+<div class="row-fluid">
+	
+${operator_1}if(${operator_2}flash.message())
+<div id="info_msg" class="alert alert-info">${operator_2}flash.message()</div>
+${operator_1}end
+${operator_1}if(${operator_2}flash.error())
+<div id="error_msg" class="alert alert-error">
+${operator_1}foreach(${operator_2}error in ${operator_2}flash.error().entrySet())
+	${operator_2}text.get(${operator_2}error.value).insert(${operator_2}text.get("${propertyName}.${operator_2}{error.key}.label"))
+	<br/>
+${operator_1}end
+</div>
+${operator_1}end
+
+<div class="btn-toolbar">
+	
+    <a class="btn" href="list"><i class="icon-list"></i>${operator_2}text.get("default.list.label")</a>
+	<a class="btn" href="create"><i class="icon-plus"></i>${operator_2}text.get("default.new.label")</a>
+  <div class="btn-group"></div>
+</div>
+	
+<div class="well">
+	<dl class="dl-horizontal">
+#foreach($prop in $props)
+		${operator_1}if(${operator_2}${propertyName}Instance.${prop})
+    		<dt>
+    			<span>${operator_2}text.get("${propertyName}.${prop}.label")</span>
+    		</dt>
+    		<dd>
+    			<span>${operator_2}${propertyName}Instance.${prop}</span>
+            </dd>
+		${operator_1}end
+#end
+    </dl>
+	<a class="btn" href="edit?id=${operator_2}{${propertyName}Instance.id}"><i class="icon-edit"></i>${operator_2}text.get("default.button.edit.label")</a>
+	<a class="btn" href="delete?id=${operator_2}{${propertyName}Instance.id}" onclick="return confirm('${operator_2}{text.get("default.button.delete.confirm.message")}')"><i class="icon-trash"></i>${operator_2}text.get("default.button.delete.label")</a>
+</div>
+
+</div>
+</div>

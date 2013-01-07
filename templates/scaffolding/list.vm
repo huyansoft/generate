@@ -1,19 +1,31 @@
 <div class="container-fluid">
 <div class="row-fluid">
 
+${operator_1}if(${operator_2}flash.message())
+<div id="info_msg" class="alert alert-info">${operator_2}flash.message()</div>
+${operator_1}end
+${operator_1}if(${operator_2}flash.error())
+<div id="error_msg" class="alert alert-error">
+${operator_1}foreach(${operator_2}error in ${operator_2}flash.error().entrySet())
+	${operator_2}text.get(${operator_2}error.value).insert(${operator_2}text.get("${propertyName}.${operator_2}{error.key}.label"))
+	<br/>
+${operator_1}end
+</div>
+${operator_1}end
+
 <div class="search-well">##查询框
 
-	<form class="form-inline">
-		<input class="input-medium" placeholder="Search Help..." id="appendedInputButton" type="text">
-		<button class="btn" type="button"><i class="icon-search"></i>查询</button>
+	<form action="list" method="post" class="form-inline">
+		<input class="input-medium" type="text">
+		<button class="btn" type="button"><i class="icon-search"></i>${operator_2}text.get("default.search.label")</button>
 	</form>
 </div>
 	
 <div class="btn-toolbar">##功能按钮
-    
-	<button class="btn btn-primary"><i class="icon-plus"></i>添加</button>
-    <button class="btn">导入</button>
-    <button class="btn">导出</button>
+
+	<a class="btn" href="create"><i class="icon-plus"></i>${operator_2}text.get("default.new.label")</a>
+    <a class="btn" href="import"><i class="icon-upload"></i>${operator_2}text.get("default.import.label")</a>
+    <a class="btn" href="export"><i class="icon-download"></i>${operator_2}text.get("default.export.label")</a>
 </div>
 
 ##列表
@@ -22,24 +34,29 @@
       <thead>
         <tr>
 #foreach($prop in $props)
-		    <th>$prop</th>
+		    <th>${operator_2}text.get("${propertyName}.${prop}.label")</th>
 #end
+	        <th>操作</th>
 		</tr>
       </thead>
       <tbody>
-		${foreach}($${propertyName} in $${propertyName}List)
+		${operator_1}foreach($${propertyName} in $${propertyName}List)
 		<tr>
 #foreach($prop in $props)
-		    <th>$!${propertyName}.$prop</th>
+		    <td>$!${propertyName}.$prop</td>
 #end
+        	<td><a href="show?id=$${propertyName}.id" title="${operator_2}text.get('default.show.label')"><i class="icon-eye-open"></i></a> |
+                <a href="edit?id=$${propertyName}.id" title="${operator_2}text.get('default.edit.label')"><i class="icon-edit"></i></a> |
+                <a href="delete?id=$${propertyName}.id" title="${operator_2}text.get('default.button.delete.label')" onclick="return confirm('${operator_2}{text.get("default.button.delete.confirm.message")}')"><i class="icon-trash"></i></a>
+        	</td>
 		</tr>
-		${end}
+		${operator_1}end
       </tbody>
     </table>
 </div>
 <div class="pagination">##分页
 
-	#pager($url,$count,$ddutool.page_size())
+	${operator_1}pager(${operator_2}count)
 </div>
 
 </div>

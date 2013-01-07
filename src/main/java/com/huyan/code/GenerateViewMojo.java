@@ -68,10 +68,10 @@ public class GenerateViewMojo extends AbstractMojo {
 			}
 
 			if (!template.exists()) {
-				throw new MojoExecutionException("ERROR:template directory : " + template.getCanonicalPath()
+				throw new MojoExecutionException("ERROR:template path : " + template.getCanonicalPath()
 						+ " is not exists!");
 			} else if (!template.isDirectory()) {
-				throw new MojoExecutionException("ERROR:template directory : " + template.getCanonicalPath()
+				throw new MojoExecutionException("ERROR:template path : " + template.getCanonicalPath()
 						+ " is not a directory!");
 			} else {
 				
@@ -80,7 +80,7 @@ public class GenerateViewMojo extends AbstractMojo {
 			}
 			getLog().info(template.getCanonicalPath());
 		} catch (IOException e) {
-			throw new MojoExecutionException("ERROR:template directory is not exists!");
+			throw new MojoExecutionException("ERROR:template path is not exists!");
 		} catch (ClassNotFoundException cnfe) {
 			throw new MojoExecutionException("ERROR:Class Not Found:" + domain);
 		} catch (IllegalAccessException iae) {
@@ -155,20 +155,70 @@ public class GenerateViewMojo extends AbstractMojo {
 
 	}
 	
-	private void generateView(Class domainClass, String templateName, String destDir) throws MojoExecutionException {
+	private void generateViews(Class domainClass) throws MojoExecutionException {
 		try {
 			String domainClassName = domainClass.getSimpleName();
-			String propertyName = domainClassName.substring(0, 1).toLowerCase() + domainClassName.substring(1);
 			
+			//视图文件输出路径
+			String destDirName = baseDir.getCanonicalPath() + File.separator + "src" + File.separator + "main"
+					+ File.separator + "webapp" + File.separator + "WEB-INF" + File.separator
+					+ StringUtils.uncapitalise(domainClassName);
+			//构建视图文件夹
+			File viewsDir = new File(destDirName);
+			if(!viewsDir.exists()) {
+				viewsDir.mkdirs();
+				getLog().info("create directory : " + viewsDir.getCanonicalPath());
+			}
+			
+			for(String viewTemplateName : getTemplateNames()) {
+				getLog().info("create view : " + viewTemplateName);
+				generateView(domainClass, viewTemplateName, viewsDir.getCanonicalPath());
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/** 
+	* @Description: 获取所有的模板文件名
+	* @return
+	* @throws MojoExecutionException
+	* @author huyansoft@gmail.com
+	* @date 2013-1-7 上午10:15:37  
+	*/
+	private String[] getTemplateNames() throws MojoExecutionException {
+		String [] templateNames = null;
+		IOFileFilter fileFilter1 = new SuffixFileFilter(".vm");
+		IOFileFilter fileFilter2 = new NotFileFilter(DirectoryFileFilter.INSTANCE);
+		FilenameFilter filenameFilter = new AndFileFilter(fileFilter1, fileFilter2);
+		try {
+			templateNames = new File(template.getCanonicalPath()).list(filenameFilter);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return templateNames;
+	}
+	
+	/** 
+	* @Description: 生成视图文件
+	* @param domainClass domain类
+	* @param templateName 模板文件名称
+	* @param destDir 目标文件夹
+	* @throws MojoExecutionException
+	* @author huyansoft@gmail.com
+	* @date 2013-1-7 上午10:17:00  
+	*/
+	private void generateView(Class domainClass, String templateName, String destDir) throws MojoExecutionException {
+		try {
+			String propertyName = StringUtils.uncapitalise(domainClass.getSimpleName());
+			
+			//构建velocity模板引擎
 			VelocityEngine ve = new VelocityEngine();
 			ve.addProperty("file.resource.loader.path", template.getCanonicalPath());
 			ve.init(template.getCanonicalPath() + File.separator + "velocity.properties");
 			Template vTemplate = ve.getTemplate(templateName);
-			
-//			Velocity.init(template.getCanonicalPath() + File.separator + "velocity.properties");
-//			Template template = Velocity.getTemplate(templateName);
-//			VelocityContext context = new VelocityContext();
-			
+			//加载velocity tools
 			ToolManager manager = new ToolManager();
 			manager.setVelocityEngine(ve);
 			manager.configure(template.getCanonicalPath() + File.separator + "velocity-toolbox.xml");
@@ -179,11 +229,10 @@ public class GenerateViewMojo extends AbstractMojo {
 				names.add(name);
 			}
 			context.put("domainClass", domainClass.getName());
-			context.put("props", names);
-			context.put("foreach", "#foreach");
-			context.put("end", "#end");
-			context.put("parse", "#parse");
 			context.put("propertyName", propertyName);
+			context.put("props", names);
+			context.put("operator_1", "#");
+			context.put("operator_2", "$");
 			File output = new File(destDir + File.separator + templateName);
 			if(!output.exists()) {
 				output.createNewFile();
@@ -203,6 +252,13 @@ public class GenerateViewMojo extends AbstractMojo {
 		}
 	}
 	
+	/** 
+	* @Description: 获得一个实体的所有属性
+	* @param obj
+	* @return
+	* @author huyansoft@gmail.com
+	* @date 2013-1-7 上午10:18:36  
+	*/
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> listFields(Object obj) {
 		try {
@@ -212,41 +268,6 @@ public class GenerateViewMojo extends AbstractMojo {
 		} catch (Exception e) {
 			throw new RuntimeException("Exception when Fetching fields of " + this);
 		}
-	}
-
-	private void generateViews(Class domainClass) throws MojoExecutionException {
-		try {
-			String domainClassName = domainClass.getSimpleName();
-			String destDirName = domainClassName.substring(0, 1).toLowerCase() + domainClassName.substring(1);
-			File viewsDir = new File(baseDir.getCanonicalPath() + File.separator + "src" + File.separator + "main"
-					+ File.separator + "webapp" + File.separator + "WEB-INF" + File.separator
-					+ destDirName);
-			if(!viewsDir.exists()) {
-				viewsDir.mkdirs();
-				getLog().info("create directory : " + viewsDir.getCanonicalPath());
-			}
-			
-			for(String viewTemplateName : getTemplateNames()) {
-				getLog().info("create view : " + viewTemplateName);
-				generateView(domainClass, viewTemplateName, viewsDir.getCanonicalPath());
-			}
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private String[] getTemplateNames() throws MojoExecutionException {
-		String [] templateNames = null;
-		IOFileFilter fileFilter1 = new SuffixFileFilter(".vm");
-		IOFileFilter fileFilter2 = new NotFileFilter(DirectoryFileFilter.INSTANCE);
-		FilenameFilter filenameFilter = new AndFileFilter(fileFilter1, fileFilter2);
-		try {
-			templateNames = new File(template.getCanonicalPath()).list(filenameFilter);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return templateNames;
 	}
 
 }

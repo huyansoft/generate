@@ -12,20 +12,21 @@ ${operator_1}foreach(${operator_2}error in ${operator_2}flash.error().entrySet()
 ${operator_1}end
 </div>
 ${operator_1}end
-
+	
 <div class="btn-toolbar">
 	
 	<a class="btn" href="list"><i class="icon-list"></i>${operator_2}text.get("default.list.label")</a>
+	<a class="btn" href="create"><i class="icon-plus"></i>${operator_2}text.get("default.new.label")</a>
 	<div class="btn-group"></div>
 </div>
 
 <div class="well">
-	
-    <form class="form-horizontal" action="save" method="post">
+    <form class="form-horizontal" action="update" method="post">
+		<input name="id" value="${operator_2}!${propertyName}Instance.id" type="hidden"/>
 		${operator_1}parse('WEB-INF/${propertyName}/_form.vm')
 		<fieldset >
-			
-			<button type="submit" class="btn" id="update"><i class="icon-save"></i>${operator_2}text.get("default.button.create.label")</button>
+			<button type="submit" class="btn" id="update"><i class="icon-refresh"></i>${operator_2}text.get("default.button.update.label")</button>
+			<a class="btn" href="delete?id=${operator_2}!${propertyName}Instance.id" onclick="return confirm('${operator_2}{text.get("default.button.delete.confirm.message")}')"><i class="icon-trash"></i>${operator_2}text.get("default.button.delete.label")</a>
         </fieldset>
     </form>
 </div>
